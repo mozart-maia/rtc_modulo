@@ -147,8 +147,14 @@ bool ds3231_is_connected() {
 // Ler registrador do DS3231
 uint8_t ds3231_read_register(uint8_t reg) {
     uint8_t data;
-    i2c_write_blocking(I2C_PORT, DS3231_I2C_ADDRESS, &reg, 1, true);
-    i2c_read_blocking(I2C_PORT, DS3231_I2C_ADDRESS, &data, 1, false);
+    int w_err = i2c_write_blocking(I2C_PORT, DS3231_I2C_ADDRESS, &reg, 1, true);
+    if (w_err != 0) {
+        printf("\nErro em escrita i2c no ds3231: %d\n", w_err);
+    }
+    int r_err = i2c_read_blocking(I2C_PORT, DS3231_I2C_ADDRESS, &data, 1, false);
+    if (r_err != 0) {
+        printf("\nErro em leitura i2c no ds3231: %d\n", r_err);
+    }
     return data;
 }
 
