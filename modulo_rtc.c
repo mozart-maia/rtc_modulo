@@ -22,8 +22,8 @@
 #define I2C_SCL 9
 
 // config wifi
-#define WIFI_SSID "VIVOFIBRA-71C8"
-#define WIFI_PASSWORD "1EEA618025"
+#define WIFI_SSID "wifimo"
+#define WIFI_PASSWORD "abcd@1234"
 
 // Configuração do display OLED 
 #define I2C_SDA_PIN_OLED 14 
@@ -52,8 +52,11 @@
 #define NTP_MSG_LEN 48
 #define NTP_PORT 123
 #define NTP_DELTA 2208988800 // Diferença entre 1900 e 1970
-#define NTP_RESEND_TIME (10 * 1000)
 #define NTP_TIMEOUT (30 * 1000)
+#define NTP_SERVER "pool.ntp.org"
+#define NTP_DELTA 2208988800 // seconds between 1 Jan 1900 and 1 Jan 1970
+#define NTP_TEST_TIME_MS (60 * 1000) // uma requisição por minuto para o servidor NTP
+#define NTP_RESEND_TIME_MS (10 * 1000)
 
 // Configuração de Timezone
 #define TIMEZONE_OFFSET_HOURS (-3)  // UTC-3 (Brasília)
@@ -148,13 +151,13 @@ bool ds3231_is_connected() {
 uint8_t ds3231_read_register(uint8_t reg) {
     uint8_t data;
     int w_err = i2c_write_blocking(I2C_PORT, DS3231_I2C_ADDRESS, &reg, 1, true);
-    if (w_err != 0) {
-        printf("\nErro em escrita i2c no ds3231: %d\n", w_err);
-    }
+    // if (w_err != 0) {
+    //     printf("\nErro em escrita i2c no ds3231: %d\n", w_err);
+    // }
     int r_err = i2c_read_blocking(I2C_PORT, DS3231_I2C_ADDRESS, &data, 1, false);
-    if (r_err != 0) {
-        printf("\nErro em leitura i2c no ds3231: %d\n", r_err);
-    }
+    // if (r_err != 0) {
+    //     printf("\nErro em leitura i2c no ds3231: %d\n", r_err);
+    // }
     return data;
 }
 
@@ -252,12 +255,7 @@ typedef struct NTP_T_ {
     async_at_time_worker_t resend_worker;
 } NTP_T;
 
-#define NTP_SERVER "pool.ntp.org"
-#define NTP_MSG_LEN 48
-#define NTP_PORT 123
-#define NTP_DELTA 2208988800 // seconds between 1 Jan 1900 and 1 Jan 1970
-#define NTP_TEST_TIME_MS (60 * 1000) // uma requisição por minuto para o servidor NTP
-#define NTP_RESEND_TIME_MS (10 * 1000)
+
 
 // Called with results of operation
 static void ntp_result(NTP_T* state, int status, time_t *result) {
